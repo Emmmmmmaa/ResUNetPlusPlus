@@ -17,7 +17,7 @@ from metrics import dice_coef, dice_loss
 if __name__ == "__main__":
     ## Path
     file_path = "files/"
-    model_path = "files/resunetplusplus.h5"
+    model_path = "files/resunetplusplus.keras"  # Modify the file path to include the .keras extension
 
     ## Create files folder
     try:
@@ -25,12 +25,14 @@ if __name__ == "__main__":
     except:
         pass
 
-    train_path = "new_data/kvasir_segmentation_dataset/train/"
-    valid_path = "new_data/kvasir_segmentation_dataset/valid/"
+    train_path = "new_data/Kvasir-SEG/train/"
+    valid_path = "new_data/Kvasir-SEG/valid/"
 
     ## Training
     train_image_paths = glob(os.path.join(train_path, "images", "*"))
     train_mask_paths = glob(os.path.join(train_path, "masks", "*"))
+    train_image_paths = [os.path.normpath(path) for path in train_image_paths]
+    train_mask_paths = [os.path.normpath(path) for path in train_mask_paths]  # added 
     train_image_paths.sort()
     train_mask_paths.sort()
 
@@ -40,6 +42,8 @@ if __name__ == "__main__":
     ## Validation
     valid_image_paths = glob(os.path.join(valid_path, "images", "*"))
     valid_mask_paths = glob(os.path.join(valid_path, "masks", "*"))
+    valid_image_paths = [os.path.normpath(path) for path in valid_image_paths]
+    valid_mask_paths = [os.path.normpath(path) for path in valid_mask_paths]  # added 
     valid_image_paths.sort()
     valid_mask_paths.sort()
 
@@ -78,9 +82,9 @@ if __name__ == "__main__":
     early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=False)
     callbacks = [csv_logger, checkpoint, reduce_lr, early_stopping]
 
-    model.fit_generator(train_gen,
+    model.fit(train_gen,
             validation_data=valid_gen,
             steps_per_epoch=train_steps,
             validation_steps=valid_steps,
             epochs=epochs,
-            callbacks=callbacks)
+            callbacks=callbacks) # revise, fit_generator is deprecated

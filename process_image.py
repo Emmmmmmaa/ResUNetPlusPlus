@@ -21,6 +21,9 @@ def save_image(image, mask, path, binary=True):
     image = np.array(image)
     if binary == True:
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    image_path = os.path.normpath(path[0])
+    mask_path = os.path.normpath(path[1])
+    print("image_path:",image_path)
     cv2.imwrite(path[0], image)
     cv2.imwrite(path[1], mask)
 
@@ -179,8 +182,9 @@ if __name__ == '__main__':
     size = (256, 256)
     crop_size = (300, 300)
 
-    path = "../../../ml_dataset/"
-    dataset_name = "kvasir_segmentation_dataset"
+    # path = "../../../ml_dataset/"
+    path = 'data/'
+    dataset_name = "Kvasir-SEG"
     full_path = os.path.join(path, dataset_name)
 
     new_path = "new_data/"
@@ -220,10 +224,11 @@ if __name__ == '__main__':
     print("Validation Size: ", valid_size)
     print("Testing Size: ", test_size)
 
-    ## Validation images and masks
+    ## Testing images and masks
     for idx, p in tqdm(enumerate(test_images), total=len(test_images)):
         ## Path
-        name = p.split("/")[-1].split(".")[0]
+        name = os.path.splitext(os.path.basename(p))[0]  # 使用 os.path 函数安全地提取文件名
+        print(name)
         image_path = test_images[idx]
         mask_path = test_masks[idx]
 
@@ -231,7 +236,7 @@ if __name__ == '__main__':
             image = read_image(image_path)
             mask = read_image(mask_path, grayscale=True)
 
-            new_image_path = os.path.join(new_full_path, "test", "images/")
+            new_image_path = os.path.join(new_full_path, "test", "images/") 
             new_mask_path = os.path.join(new_full_path, "test", "masks/")
 
             image = resize(image, size)
@@ -242,10 +247,10 @@ if __name__ == '__main__':
             tmp_path = [img_path, mask_path]
             save_image(image, mask, tmp_path)
 
-    ## Testing images and masks
+    ## Validation images and masks
     for idx, p in tqdm(enumerate(valid_images), total=len(valid_images)):
         ## Path
-        name = p.split("/")[-1].split(".")[0]
+        name = os.path.splitext(os.path.basename(p))[0]  # 使用 os.path 函数安全地提取文件名
         image_path = valid_images[idx]
         mask_path = valid_masks[idx]
 
@@ -267,11 +272,11 @@ if __name__ == '__main__':
     ## Training images and masks
     for idx, p in tqdm(enumerate(train_images), total=len(train_images)):
         ## Path
-        name = p.split("/")[-1].split(".")[0]
+        name = os.path.splitext(os.path.basename(p))[0]  # 使用 os.path 函数安全地提取文件名
         image_path = train_images[idx]
         mask_path = train_masks[idx]
 
-        if os.path.exists(image_path) and os.path.exists(image_path):
+        if os.path.exists(image_path) and os.path.exists(mask_path):
             image = read_image(image_path)
             mask = read_image(mask_path, grayscale=True)
 
